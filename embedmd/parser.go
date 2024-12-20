@@ -69,6 +69,8 @@ func parsingText(out io.Writer, s textScanner, run commandRunner) (state, error)
 		return parsingCmd, nil
 	case strings.HasPrefix(line, "```"):
 		return codeParser{print: true}.parse, nil
+	case strings.HasPrefix(line, "<!-- embedmd"):
+		return codeParser{print: true}.parse, nil
 	default:
 		fmt.Fprintln(out, s.Text())
 		return parsingText, nil
@@ -89,7 +91,7 @@ func parsingCmd(out io.Writer, s textScanner, run commandRunner) (state, error) 
 	if !s.Scan() {
 		return nil, nil // end of file, which is fine.
 	}
-	if strings.HasPrefix(s.Text(), "```") {
+	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
 		return codeParser{print: false}.parse, nil
 	}
 	fmt.Fprintln(out, s.Text())
@@ -105,7 +107,7 @@ func (c codeParser) parse(out io.Writer, s textScanner, run commandRunner) (stat
 	if !s.Scan() {
 		return nil, fmt.Errorf("unbalanced code section")
 	}
-	if !strings.HasPrefix(s.Text(), "```") {
+	if !strings.HasPrefix(s.Text(), "```") && !strings.HasPrefix(s.Text(), "<!-- embedmd") {
 		return c.parse, nil
 	}
 

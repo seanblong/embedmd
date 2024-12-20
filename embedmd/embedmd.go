@@ -16,7 +16,7 @@
 //
 // The format of an embedmd command is:
 //
-//     [embedmd]:# (pathOrURL language /start regexp/ /end regexp/)
+//	[embedmd]:# (pathOrURL language /start regexp/ /end regexp/)
 //
 // The embedded code will be extracted from the file at pathOrURL,
 // which can either be a relative path to a file in the local file
@@ -29,27 +29,26 @@
 // Omitting the the second regular expression will embed only the piece of
 // text that matches /regexp/:
 //
-//     [embedmd]:# (pathOrURL language /regexp/)
+//	[embedmd]:# (pathOrURL language /regexp/)
 //
 // To embed the whole line matching a regular expression you can use:
 //
-//     [embedmd]:# (pathOrURL language /.*regexp.*\n/)
+//	[embedmd]:# (pathOrURL language /.*regexp.*\n/)
 //
 // If you want to embed from a point to the end you should use:
 //
-//     [embedmd]:# (pathOrURL language /start regexp/ $)
+//	[embedmd]:# (pathOrURL language /start regexp/ $)
 //
 // Finally you can embed a whole file by omitting both regular expressions:
 //
-//     [embedmd]:# (pathOrURL language)
+//	[embedmd]:# (pathOrURL language)
 //
 // You can ommit the language in any of the previous commands, and the extension
 // of the file will be used for the snippet syntax highlighting. Note that while
 // this works Go files, since the file extension .go matches the name of the language
 // go, this will fail with other files like .md whose language name is markdown.
 //
-//     [embedmd]:# (file.ext)
-//
+//	[embedmd]:# (file.ext)
 package embedmd
 
 import (
@@ -92,21 +91,29 @@ type embedder struct {
 func (e *embedder) runCommand(w io.Writer, cmd *command) error {
 	b, err := e.Fetch(e.baseDir, cmd.path)
 	if err != nil {
-		return fmt.Errorf("could not read %s: %v", cmd.path, err)
+		return fmt.Errorf("could not read %s: %w", cmd.path, err)
 	}
 
 	b, err = extract(b, cmd.start, cmd.end)
 	if err != nil {
-		return fmt.Errorf("could not extract content from %s: %v", cmd.path, err)
+		return fmt.Errorf("could not extract content from %s: %w", cmd.path, err)
 	}
 
 	if len(b) > 0 && b[len(b)-1] != '\n' {
 		b = append(b, '\n')
 	}
 
-	fmt.Fprintln(w, "```"+cmd.lang)
-	w.Write(b)
-	fmt.Fprintln(w, "```")
+	if cmd.useFence {
+		fmt.Fprintln(w, "")
+		fmt.Fprintln(w, "```"+cmd.lang)
+		w.Write(b)
+		fmt.Fprintln(w, "```")
+	} else {
+		fmt.Fprintln(w, "")
+		fmt.Fprintln(w, "<!-- embedmd block start -->")
+		w.Write(b)
+		fmt.Fprintln(w, "<!-- embedmd block end -->")
+	}
 	return nil
 }
 

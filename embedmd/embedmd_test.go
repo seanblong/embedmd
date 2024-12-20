@@ -94,33 +94,39 @@ func TestExtractFromFile(t *testing.T) {
 	}{
 		{
 			name:  "extract the whole file",
-			cmd:   command{path: "code.go", lang: "go"},
+			cmd:   command{path: "code.go", lang: "go", useFence: true},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "```go\n" + string(content) + "```\n",
+			out:   "\n```go\n" + string(content) + "```\n",
 		},
 		{
 			name:    "extract the whole from a different directory",
-			cmd:     command{path: "code.go", lang: "go"},
+			cmd:     command{path: "code.go", lang: "go", useFence: true},
 			baseDir: "sample",
 			files:   map[string][]byte{"sample/code.go": []byte(content)},
-			out:     "```go\n" + string(content) + "```\n",
+			out:     "\n```go\n" + string(content) + "```\n",
 		},
 		{
 			name:  "added line break",
-			cmd:   command{path: "code.go", lang: "go", start: ptr("/fmt\\.Println/")},
+			cmd:   command{path: "code.go", lang: "go", useFence: true, start: ptr("/fmt\\.Println/")},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "```go\nfmt.Println\n```\n",
+			out:   "\n```go\nfmt.Println\n```\n",
 		},
 		{
 			name: "missing file",
-			cmd:  command{path: "code.go", lang: "go"},
+			cmd:  command{path: "code.go", lang: "go", useFence: true},
 			err:  "could not read code.go: file does not exist",
 		},
 		{
 			name:  "unmatched regexp",
-			cmd:   command{path: "code.go", lang: "go", start: ptr("/potato/")},
+			cmd:   command{path: "code.go", lang: "go", useFence: true, start: ptr("/potato/")},
 			files: map[string][]byte{"code.go": []byte(content)},
 			err:   "could not extract content from code.go: could not match \"/potato/\"",
+		},
+		{
+			name:  "no fencing",
+			cmd:   command{path: "code.go", lang: "none"},
+			files: map[string][]byte{"code.go": []byte(content)},
+			out:   "\n<!-- embedmd block start -->\n" + string(content) + "<!-- embedmd block end -->\n",
 		},
 	}
 
@@ -177,10 +183,23 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n" +
+				"[embedmd]:# (code.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
+				"Yay!\n",
+		},
+		{
+			name: "generating code for first time (no fencing)",
+			in: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n" +
+				"Yay!\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
 		},
 		{
@@ -191,7 +210,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"sample/code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n" +
+				"[embedmd]:# (code.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -207,10 +226,26 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n" +
+				"[embedmd]:# (code.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
+				"Yay!\n",
+		},
+		{
+			name: "replacing existing code (no fencing)",
+			in: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
 		},
 		{
@@ -220,7 +255,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			urls: map[string][]byte{"https://fakeurl.com/main.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (https://fakeurl.com/main.go)\n" +
+				"[embedmd]:# (https://fakeurl.com/main.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -238,7 +273,7 @@ func TestProcess(t *testing.T) {
 			in: "# This is some markdown\n" +
 				"[embedmd]:# (https://fakeurl.com\\main.go)\n" +
 				"Yay!\n",
-			err: "2: could not read https://fakeurl.com\\main.go: parse https://fakeurl.com\\main.go: invalid character \"\\\\\" in host name",
+			err: "2: could not read https://fakeurl.com\\main.go: parse \"https://fakeurl.com\\\\main.go\": invalid character \"\\\\\" in host name",
 		},
 		{
 			name: "ignore commands in code blocks",

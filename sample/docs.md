@@ -20,6 +20,10 @@ You can also see how to get the current time:
 
 [embedmd]:# (hello.go /time\.[^)]*\)/)
 
+You can also skip the fencing and add content directly into your markdown.
+
+[embedmd]:# (hello.go none /Copyright/ /reserved/)
+
 You can also have some extra code independent from `embedmd`
 
 ```python

@@ -69,6 +69,9 @@ func TestParseCommand(t *testing.T) {
 		{name: "bad url",
 			in:  "(http://golang:org:sample.go)",
 			cmd: command{path: "http://golang:org:sample.go", lang: "go"}},
+		{name: "file language none (no fencing)",
+			in:  "(test.md none)",
+			cmd: command{path: "test.md", lang: "none"}},
 	}
 
 	for _, tt := range tc {
