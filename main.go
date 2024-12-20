@@ -24,12 +24,15 @@
 //
 // embedmd supports two flags:
 // -d: will print the difference of the input file with what the output
-//     would have been if executed.
+//
+//	would have been if executed.
+//
 // -w: rewrites the given files rather than writing the output to the standard
-//     output.
+//
+//	output.
 //
 // For more information on the format of the commands, read the documentation
-// of the github.com/campoy/embedmd/embedmd package.
+// of the github.com/seanblong/embedmd/embedmd package.
 package main
 
 import (
@@ -41,12 +44,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/campoy/embedmd/embedmd"
 	"github.com/pmezard/go-difflib/difflib"
+	"github.com/seanblong/embedmd/embedmd"
 )
 
 // modified while building by -ldflags.
-var version = "unkown"
+var version = "unknown"
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "usage: embedmd [flags] [path ...]\n")
