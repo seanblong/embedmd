@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/campoy/embedmd.svg)](https://travis-ci.org/campoy/embedmd) [![Go Report Card](https://goreportcard.com/badge/github.com/campoy/embedmd)](https://goreportcard.com/report/github.com/campoy/embedmd)
-
-
 # embedmd
+
+[![Build Status](https://travis-ci.org/seanblong/embedmd.svg)](https://travis-ci.org/seanblong/embedmd)
+[![Go Report Card](https://goreportcard.com/badge/github.com/seanblong/embedmd)](https://goreportcard.com/report/github.com/seanblong/embedmd)
 
 Are you tired of copy pasting your code into your `README.md` file, just to
 forget about it later on and have unsynced copies? Or even worse, code
@@ -68,6 +68,14 @@ files, since `.go` matches `go`). However, this will fail with other files like
 [embedmd]:# (file.ext)
 ```
 
+If you want to remove code fencing altogether, you can explicitly use `none` as
+the language.  This can be useful when composing large, renderd Markdown files out
+of smaller Markdown files that contain fenced code blocks themselves.
+
+```Markdown
+[embedmd]:# (file.md none)
+```
+
 ## Installation
 
 > You can install Go by following [these instructions](https://golang.org/doc/install).
@@ -75,23 +83,21 @@ files, since `.go` matches `go`). However, this will fail with other files like
 `embedmd` is written in Go, so if you have Go installed you can install it with
 `go get`:
 
-```
-go get github.com/campoy/embedmd
+```bash
+go install github.com/seanblong/embedmd
 ```
 
 This will download the code, compile it, and leave an `embedmd` binary
 in `$GOPATH/bin`.
 
-Eventually, and if there's enough interest, I will provide binaries for
-every OS and architecture out there ... _eventually_.
-
-## Usage:
+## Usage
 
 Given the two files in [sample](sample):
 
 *hello.go:*
 
 [embedmd]:# (sample/hello.go)
+
 ```go
 // Copyright 2016 Google Inc. All rights reserved.
 // Use of this source code is governed by the Apache 2.0
@@ -100,18 +106,19 @@ Given the two files in [sample](sample):
 package main
 
 import (
-	"fmt"
-	"time"
+    "fmt"
+    "time"
 )
 
 func main() {
-	fmt.Println("Hello, there, it is", time.Now())
+    fmt.Println("Hello, there, it is", time.Now())
 }
 ```
 
 *docs.md:*
 
 [embedmd]:# (sample/docs.md Markdown /./ /embedmd.*time.*/)
+
 ```Markdown
 # A hello world in Go
 
@@ -136,15 +143,15 @@ You can also see how to get the current time:
 [embedmd]:# (hello.go /time\.[^)]*\)/)
 ```
 
-# Flags
+## Flags
 
 * `-w`: Executing `embedmd -w docs.md` will modify `docs.md`
-and add the corresponding code snippets, as shown in
-[sample/result.md](sample/result.md).
+  and add the corresponding code snippets, as shown in
+  [sample/result.md](sample/result.md).
 
 * `-d`: Executing `embedmd -d docs.md` will display the difference
-between the contents of `docs.md` and the output of
-`embedmd docs.md`.
+  between the contents of `docs.md` and the output of
+  `embedmd docs.md`.
 
 ### Disclaimer
 
