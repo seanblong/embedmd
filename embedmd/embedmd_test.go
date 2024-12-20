@@ -96,20 +96,20 @@ func TestExtractFromFile(t *testing.T) {
 			name:  "extract the whole file",
 			cmd:   command{path: "code.go", lang: "go", useFence: true},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "```go\n" + string(content) + "```\n",
+			out:   "\n```go\n" + string(content) + "```\n",
 		},
 		{
 			name:    "extract the whole from a different directory",
 			cmd:     command{path: "code.go", lang: "go", useFence: true},
 			baseDir: "sample",
 			files:   map[string][]byte{"sample/code.go": []byte(content)},
-			out:     "```go\n" + string(content) + "```\n",
+			out:     "\n```go\n" + string(content) + "```\n",
 		},
 		{
 			name:  "added line break",
 			cmd:   command{path: "code.go", lang: "go", useFence: true, start: ptr("/fmt\\.Println/")},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "```go\nfmt.Println\n```\n",
+			out:   "\n```go\nfmt.Println\n```\n",
 		},
 		{
 			name: "missing file",
@@ -126,7 +126,7 @@ func TestExtractFromFile(t *testing.T) {
 			name:  "no fencing",
 			cmd:   command{path: "code.go", lang: "none"},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "<!-- embedmd block start -->\n" + string(content) + "<!-- embedmd block end -->\n",
+			out:   "\n<!-- embedmd block start -->\n" + string(content) + "<!-- embedmd block end -->\n",
 		},
 	}
 
@@ -183,7 +183,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n" +
+				"[embedmd]:# (code.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -196,7 +196,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n" +
+				"[embedmd]:# (code.go none)\n\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
 				"<!-- embedmd block end -->\n" +
@@ -210,7 +210,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"sample/code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n" +
+				"[embedmd]:# (code.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -226,7 +226,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n" +
+				"[embedmd]:# (code.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -242,7 +242,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n" +
+				"[embedmd]:# (code.go none)\n\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
 				"<!-- embedmd block end -->\n" +
@@ -255,7 +255,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			urls: map[string][]byte{"https://fakeurl.com/main.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (https://fakeurl.com/main.go)\n" +
+				"[embedmd]:# (https://fakeurl.com/main.go)\n\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +

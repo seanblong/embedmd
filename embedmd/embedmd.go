@@ -104,10 +104,12 @@ func (e *embedder) runCommand(w io.Writer, cmd *command) error {
 	}
 
 	if cmd.useFence {
+		fmt.Fprintln(w, "")
 		fmt.Fprintln(w, "```"+cmd.lang)
 		w.Write(b)
 		fmt.Fprintln(w, "```")
 	} else {
+		fmt.Fprintln(w, "")
 		fmt.Fprintln(w, "<!-- embedmd block start -->")
 		w.Write(b)
 		fmt.Fprintln(w, "<!-- embedmd block end -->")
