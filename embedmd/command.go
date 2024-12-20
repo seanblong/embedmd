@@ -22,6 +22,7 @@ import (
 type command struct {
 	path, lang string
 	start, end *string
+	useFence   bool
 }
 
 func parseCommand(s string) (*command, error) {
@@ -49,6 +50,10 @@ func parseCommand(s string) (*command, error) {
 		}
 		cmd.lang = ext[1:]
 	}
+
+	// When language is explicitly set to "none" we won't use fences, otherwise
+	// fence block will be used with specified or inferred language.
+	cmd.useFence = cmd.lang != "none"
 
 	switch {
 	case len(args) == 1:
