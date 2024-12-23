@@ -8,8 +8,7 @@ import (
 )
 
 func TestIntegration(t *testing.T) {
-	cmd := exec.Command("embedmd", "docs.md")
-	cmd.Dir = "sample"
+	cmd := exec.Command("go", "run", "main.go", "sample/docs.md")
 	got, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("could not process file (%v): %s", err, got)

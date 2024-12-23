@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Update coverage badge
+    name: Update Coverage Badge
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,8 +25,8 @@ jobs:
         run: |
           go test -v ./... -covermode=count -coverprofile=coverage.out
           # remove sample directory from coverage report
-          cat coverage.out | grep -v "embedmd/sample/" > coverage.out
-          go tool cover -func=coverage.out -o=coverage.out
+          cat coverage.out | grep -v "embedmd/sample/" > coverage-without-samples.out
+          go tool cover -func=coverage-without-samples.out -o=coverage.out
 
       - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
         uses: tj-actions/coverage-badge-go@v2
