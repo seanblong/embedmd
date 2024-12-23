@@ -3,6 +3,7 @@
 Go is very simple, here you can see a whole "hello, world" program.
 
 [embedmd]:# (hello.go)
+
 ```go
 // Copyright 2016 Google Inc. All rights reserved.
 // Use of this source code is governed by the Apache 2.0
@@ -23,6 +24,7 @@ func main() {
 We can try to embed a file from a directory.
 
 [embedmd]:# (test/hello.go /func main/ $)
+
 ```go
 func main() {
 	fmt.Println("Hello, there, it is", time.Now())
@@ -32,6 +34,7 @@ func main() {
 You always start with a `package` statement like:
 
 [embedmd]:# (hello.go /package.*/)
+
 ```go
 package main
 ```
@@ -39,6 +42,7 @@ package main
 Followed by an `import` statement:
 
 [embedmd]:# (hello.go /import/ /\)/)
+
 ```go
 import (
 	"fmt"
@@ -49,9 +53,18 @@ import (
 You can also see how to get the current time:
 
 [embedmd]:# (hello.go /time\.[^)]*\)/)
+
 ```go
 time.Now()
 ```
+
+You can also skip the fencing and add content directly into your markdown.
+
+[embedmd]:# (hello.go none /Copyright/ /reserved/)
+
+<!-- embedmd block start -->
+Copyright 2016 Google Inc. All rights reserved
+<!-- embedmd block end -->
 
 You can also have some extra code independent from `embedmd`
 
@@ -62,6 +75,7 @@ print 'hello'
 And why not include some file directly from GitHub?
 
 [embedmd]:# (https://raw.githubusercontent.com/campoy/embedmd/master/sample/hello.go /func main/ $)
+
 ```go
 func main() {
 	fmt.Println("Hello, there, it is", time.Now())
