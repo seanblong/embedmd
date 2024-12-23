@@ -1,4 +1,5 @@
 # embedmd
+![Coverage](https://img.shields.io/badge/Coverage-81.9%25-brightgreen)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/seanblong/embedmd)](https://goreportcard.com/report/github.com/seanblong/embedmd)
 
