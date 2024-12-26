@@ -1,4 +1,4 @@
-name: Generate Code Coverage Badge
+name: CI
 
 on:
   pull_request:
@@ -32,6 +32,7 @@ jobs:
         uses: tj-actions/coverage-badge-go@v2
         with:
           filename: coverage.out
+          link: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/test.yml
 
       - name: Verify Changed files
         uses: tj-actions/verify-changed-files@v16
