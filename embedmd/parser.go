@@ -95,28 +95,21 @@ func parsingCmd(out io.Writer, s textScanner, run commandRunner) (state, error) 
 	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
 		return codeParser{print: false}.parse, nil
 	}
-
 	prevLine := s.Text()
-	// we expect the line after a command to be blank, if it isn't then print
-	// it immediately, otherwise add this new line after the code block to preserve
-	// preexisting spacing with the next line,
-	if prevLine != "" && prevLine != "\n" {
-		fmt.Fprintln(out, s.Text())
-	}
 
-	// Scan the next line under command, i.e. two lines lower, as this is where
-	// we expect the code block to be.
+	// Scan the next line under command.  This is where we expect to see the code
+	// block if one was previously rendered and, if found, we should parse it.
 	if !s.Scan() {
+		fmt.Fprintln(out, prevLine)
 		return nil, nil // end of file, which is fine.
 	}
 	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
 		return codeParser{print: false}.parse, nil
 	}
 
-	// now we can restore the blank line to after we have printed a code block
-	if prevLine == "" || prevLine == "\n" {
-		fmt.Fprintln(out, prevLine)
-	}
+	// In the event we've parsed the two lines following a command and neither
+	// contains a code block, print these lines and continue parsing the file.
+	fmt.Fprintln(out, prevLine)
 	fmt.Fprintln(out, s.Text())
 	return parsingText, nil
 }
