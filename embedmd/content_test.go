@@ -1,4 +1,6 @@
-// content_test.go
+//go:build unit
+// +build unit
+
 package embedmd
 
 import (
