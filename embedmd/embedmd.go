@@ -106,12 +106,18 @@ func (e *embedder) runCommand(w io.Writer, cmd *command) error {
 	if cmd.useFence {
 		fmt.Fprintln(w, "")
 		fmt.Fprintln(w, "```"+cmd.lang)
-		w.Write(b) //nolint:errcheck
+		_, err = w.Write(b)
+		if err != nil {
+			return fmt.Errorf("could not write content to output: %w", err)
+		}
 		fmt.Fprintln(w, "```")
 	} else {
 		fmt.Fprintln(w, "")
 		fmt.Fprintln(w, "<!-- embedmd block start -->")
-		w.Write(b) //nolint:errcheck
+		_, err = w.Write(b)
+		if err != nil {
+			return fmt.Errorf("could not write content to output: %w", err)
+		}
 		fmt.Fprintln(w, "<!-- embedmd block end -->")
 	}
 	return nil
