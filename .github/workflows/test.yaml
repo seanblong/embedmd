@@ -11,15 +11,18 @@ on:
       - main
 
 jobs:
-  test:
+  pr-validation:
     runs-on: ubuntu-latest
-    name: Update Coverage Badge
+    name: PR Conventional Commit Validation
     steps:
       - name: PR Conventional Commit Validation
         uses:  ytanikin/pr-conventional-commits@1.4.0
         with:
           task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
-
+  test:
+    runs-on: ubuntu-latest
+    name: Update Coverage Badge
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
