@@ -36,7 +36,7 @@ jobs:
         uses: tj-actions/coverage-badge-go@v2
         with:
           filename: coverage.out
-          link: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/test.yml
+          link: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/test.yaml
 
       - name: Verify Changed Files
         uses: tj-actions/verify-changed-files@v16
