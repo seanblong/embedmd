@@ -26,6 +26,7 @@ repos:
       - id: go-critic
       - id: go-build
       - id: go-mod-tidy
+      - id: go-unit-tests
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.13.0
     hooks:
