@@ -136,9 +136,9 @@ func TestExtractFromFile(t *testing.T) {
 				baseDir: tt.baseDir,
 				Fetcher: fakeFileProvider(tt.files),
 			}
-
 			w := new(bytes.Buffer)
 			err := e.runCommand(w, &tt.cmd)
+
 			if !eqErr(t, tt.name, err, tt.err) {
 				return
 			}
@@ -190,7 +190,22 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 		},
 		{
-			name: "generating code for first time (no fencing)",
+			name: "generating code for first time with extra text",
+			in: "# This is some markdown\n" +
+				"[embedmd]:# (code.go)\n" +
+				"Yay!\n" +
+				"Again!\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go)\n\n" +
+				"```go\n" +
+				string(content) +
+				"```\n" +
+				"Yay!\n" +
+				"Again!\n",
+		},
+		{
+			name: "generating code for first time with no fencing",
 			in: "# This is some markdown\n" +
 				"[embedmd]:# (code.go none)\n" +
 				"Yay!\n",
@@ -201,6 +216,24 @@ func TestProcess(t *testing.T) {
 				string(content) +
 				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
+		},
+		{
+			name: "generating a lot of new code for first time",
+			in: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n\n" +
+				"And here is some more!\n" +
+				"[embedmd]:# (code.go none)\n\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n\n" +
+				"And here is some more!\n" +
+				"[embedmd]:# (code.go none)\n\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n",
 		},
 		{
 			name: "generating code for first time with base dir",
@@ -217,7 +250,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 		},
 		{
-			name: "replacing existing code",
+			name: "replacing existing code without newline after command",
 			in: "# This is some markdown\n" +
 				"[embedmd]:# (code.go)\n" +
 				"```go\n" +
@@ -233,9 +266,41 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 		},
 		{
-			name: "replacing existing code (no fencing)",
+			name: "replacing existing code with new line after command",
+			in: "# This is some markdown\n" +
+				"[embedmd]:# (code.go)\n\n" +
+				"```go\n" +
+				string(content) +
+				"```\n" +
+				"Yay!\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go)\n\n" +
+				"```go\n" +
+				string(content) +
+				"```\n" +
+				"Yay!\n",
+		},
+		{
+			name: "replacing existing code no-fencing without newline after command",
 			in: "# This is some markdown\n" +
 				"[embedmd]:# (code.go none)\n" +
+				"Yay!\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n\n" +
+				"<!-- embedmd block start -->\n" +
+				string(content) +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+		},
+		{
+			name: "replacing existing code no-fencing with newline after command",
+			in: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
 				"<!-- embedmd block end -->\n" +
