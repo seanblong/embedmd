@@ -26,8 +26,8 @@ repos:
       - id: go-critic
       - id: go-build
       - id: go-mod-tidy
-  - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 3.0.0
+  - repo: https://github.com/markdownlint/markdownlint
+    rev: v0.13.0
     hooks:
       - id: markdownlint
   - repo: https://github.com/compilerla/conventional-pre-commit

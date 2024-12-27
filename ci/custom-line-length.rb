@@ -1,6 +1,7 @@
 rule 'CR013', 'Custom line length' do
     tags :line_length
     aliases 'custom-line-length'
+    docs 'https://github.com/seanblong/embedmd/blob/main/ci/custom-line-length.md'
     params :line_length => 80, :ignore_code_blocks => false, :code_blocks => true,
            :tables => true, :ignore_prefix => nil
 
