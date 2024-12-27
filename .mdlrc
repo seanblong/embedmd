@@ -1,0 +1,2 @@
+rulesets ['ci/custom-line-length.rb']
+style 'ci/markdown-style.rb'
