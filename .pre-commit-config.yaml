@@ -1,0 +1,38 @@
+ci:
+  skip:
+    - go-vet
+    - golangci-lint
+    - go-cyclo
+    - go-critic
+    - go-build
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-ast
+      - id: destroyed-symlinks
+      - id: check-symlinks
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-fmt
+      - id: go-vet
+      - id: golangci-lint
+      - id: go-cyclo
+      - id: go-critic
+      - id: go-build
+      - id: go-mod-tidy
+  - repo: https://github.com/markdownlint/markdownlint
+    rev: v0.13.0
+    hooks:
+      - id: markdownlint
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []

@@ -88,12 +88,28 @@ func parsingCmd(out io.Writer, s textScanner, run commandRunner) (state, error) 
 	if err := run(out, cmd); err != nil {
 		return nil, err
 	}
+
 	if !s.Scan() {
 		return nil, nil // end of file, which is fine.
 	}
 	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
 		return codeParser{print: false}.parse, nil
 	}
+	prevLine := s.Text()
+
+	// Scan the next line under command.  This is where we expect to see the code
+	// block if one was previously rendered and, if found, we should parse it.
+	if !s.Scan() {
+		fmt.Fprintln(out, prevLine)
+		return nil, nil // end of file, which is fine.
+	}
+	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
+		return codeParser{print: false}.parse, nil
+	}
+
+	// In the event we've parsed the two lines following a command and neither
+	// contains a code block, print these lines and continue parsing the file.
+	fmt.Fprintln(out, prevLine)
 	fmt.Fprintln(out, s.Text())
 	return parsingText, nil
 }
