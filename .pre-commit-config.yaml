@@ -1,11 +1,6 @@
 ci:
   skip:
-    - go-vet
     - golangci-lint
-    - go-cyclo
-    - go-critic
-    - go-build
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -16,16 +11,12 @@ repos:
       - id: check-ast
       - id: destroyed-symlinks
       - id: check-symlinks
-  - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.1
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.62.2
     hooks:
-      - id: go-fmt
-      - id: go-vet
       - id: golangci-lint
-      - id: go-cyclo
-      - id: go-critic
-      - id: go-build
-      - id: go-mod-tidy
+        additional_dependencies:
+         - github.com/golangci/golangci-lint/cmd/golangci-lint@v1.62.2
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.13.0
     hooks:
