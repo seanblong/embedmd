@@ -14,6 +14,8 @@ Any type of contribution is welcome; from new features, bug fixes, tests, and do
    - [Pre-commit](#pre-commit)
       - [Prerequisites](#prerequisites)
       - [Running pre-commit Manually](#running-pre-commit-manually)
+- [Opening PRs](#opening-prs)
+   - [PR title](#pr-title)
 
 ## Code of Conduct
 
