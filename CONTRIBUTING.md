@@ -71,14 +71,11 @@ These are needed to run checks locally, e.g., `golangci-lint`.
 
 ##### Go
 
-You'll need these additional `go` dependencies, in addition to `go`, if not already
-installed:
+We're using `golangci-lint` for linting Go code with a collection of common linters,
+including `gofmt`, `govet`, `gosimple`, and `errcheck`.  Install `golangci-lint`:
 
 ```bash
-go install golang.org/x/tools/cmd/goimports@latest
-go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.62.2
-go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
 ```
 
 If the `GOPATH` is not part of your `PATH`, you may need to add it:
