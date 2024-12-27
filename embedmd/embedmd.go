@@ -61,7 +61,7 @@ import (
 // command. When a command is found, it is executed and the output is written
 // into the given io.Writer with the rest of standard markdown.
 func Process(out io.Writer, in io.Reader, opts ...Option) error {
-	e := embedder{Fetcher: fetcher{}}
+	e := embedder{Fetcher: NewFetcher(nil)}
 	for _, opt := range opts {
 		opt.f(&e)
 	}

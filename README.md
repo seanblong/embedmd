@@ -34,6 +34,10 @@ If the `pathOrURL` is a URL the tool will fetch the content in that URL.
 The embedded content starts at the first line that matches `/start regexp/`
 and finishes at the first line matching `/end regexp/`.
 
+> [!TIP]
+> If the URL is part of a private repository, you can use a personal access token
+> to authenticate by saving the token to environment variable `GITHUB_TOKEN`.
+
 Omitting the the second regular expression will embed only the piece of text
 that matches `/regexp/`:
 
