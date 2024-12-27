@@ -1,6 +1,6 @@
 # embedmd
 
-[![Coverage](https://img.shields.io/badge/Coverage-86.3%25-brightgreen)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
+[![Coverage](https://img.shields.io/badge/Coverage-0.0%25-red)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
 ![CI](https://github.com/seanblong/embedmd/actions/workflows/test.yaml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/seanblong/embedmd)](https://goreportcard.com/report/github.com/seanblong/embedmd)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/seanblong/embedmd/main.svg)](https://results.pre-commit.ci/latest/github/seanblong/embedmd/main)
