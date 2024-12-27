@@ -1,4 +1,4 @@
-name: Generate Code Coverage Badge
+name: CI
 
 on:
   pull_request:
@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Update Coverage Badge
     steps:
+      - name: PR Conventional Commit Validation
+        uses:  ytanikin/pr-conventional-commits@1.4.0
+        with:
+          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -32,14 +36,15 @@ jobs:
         uses: tj-actions/coverage-badge-go@v2
         with:
           filename: coverage.out
+          link: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/test.yml
 
-      - name: Verify Changed files
+      - name: Verify Changed Files
         uses: tj-actions/verify-changed-files@v16
         id: verify-changed-files
         with:
           files: README.md
 
-      - name: Commit changes
+      - name: Commit Changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           git config --local user.email "action@github.com"
@@ -47,7 +52,7 @@ jobs:
           git add README.md
           git commit -m "chore: Updated coverage badge."
 
-      - name: Push changes
+      - name: Push Changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: ad-m/github-push-action@master
         with:

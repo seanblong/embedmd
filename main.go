@@ -40,7 +40,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -135,7 +134,7 @@ func readFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	defer f.Close()
-	return ioutil.ReadAll(f)
+	return io.ReadAll(f)
 }
 
 func processFile(path string, rewrite, doDiff bool) (foundDiff bool, err error) {
@@ -175,7 +174,11 @@ func processFile(path string, rewrite, doDiff bool) (foundDiff bool, err error) 
 		return false, f.Truncate(int64(n))
 	}
 
-	io.Copy(stdout, buf)
+	_, err = io.Copy(stdout, buf)
+	if err != nil {
+		return false, fmt.Errorf("could not write to stdout: %v", err)
+	}
+
 	return false, nil
 }
 

@@ -1,0 +1,49 @@
+name: Generate Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Generate Release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Next Version
+        uses: reecetech/version-increment@2024.10.1
+        id: version
+        with:
+          scheme: conventional_commits
+
+      - name: Create Tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag ${{ steps.version.outputs.v-version }}
+          git push origin ${{ steps.version.outputs.v-version }}
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.v-version }}" --generate-notes
+
+      - name: Setup go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Build Assets
+        working-directory: releases
+        run: |
+          ./release.sh
+
+      - name: Attach Assets
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: "./releases/downloads/${{ steps.version.outputs.v-version }}/*.tar.gz"
+          release-tag: "${{ steps.version.outputs.v-version }}"
