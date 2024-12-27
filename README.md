@@ -1,6 +1,6 @@
 # embedmd
 
-![Coverage](https://img.shields.io/badge/Coverage-81.9%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-80.2%25-brightgreen)
 ![CI](https://github.com/seanblong/embedmd/actions/workflows/test.yaml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/seanblong/embedmd)](https://goreportcard.com/report/github.com/seanblong/embedmd)
 
