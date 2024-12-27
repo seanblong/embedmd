@@ -2,3 +2,6 @@
 *.test
 embed
 .DS_Store
+
+# ignore builds
+**/*.tar.gz
