@@ -84,6 +84,13 @@ If the `GOPATH` is not part of your `PATH`, you may need to add it:
 export PATH=$(go env GOPATH)/bin:$PATH
 ```
 
+Some predefined linters have been setup in `.golangci.yaml` already and can be
+executed with the following command:
+
+```bash
+golangci-lint run
+```
+
 ##### Ruby
 
 The `markdownlint` pre-commit hook requires `ruby` of version 2.7 or later.

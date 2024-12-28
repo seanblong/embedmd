@@ -15,15 +15,15 @@ import (
 
 // TestFetcher_LocalFiles tests the Fetch method for local file scenarios.
 func TestFetcher_LocalFiles(t *testing.T) {
-	// Initialize the fetcher
-	var f Fetcher = fetcher{}
-
 	// Create a temporary directory for local file tests
 	tempDir, err := os.MkdirTemp("", "fetcher_test_local")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir) // Clean up
+
+	// Initialize the fetcher with default client
+	f := NewFetcher(nil)
 
 	// Define table of local file test cases
 	localTests := []struct {
@@ -87,7 +87,7 @@ func TestFetcher_LocalFiles(t *testing.T) {
 						t.Errorf("Unexpected error: %v", err)
 					}
 					if !bytes.Equal(data, tt.expected) {
-						t.Errorf("Expected '%s', got '%s'", string(tt.expected), string(data))
+						t.Errorf("Expected '%s', got '%s'", string(tt.expected), data)
 					}
 				}
 			} else {
@@ -102,7 +102,7 @@ func TestFetcher_LocalFiles(t *testing.T) {
 						t.Errorf("Unexpected error: %v", err)
 					}
 					if !bytes.Equal(data, tt.expected) {
-						t.Errorf("Expected '%s', got '%s'", string(tt.expected), string(data))
+						t.Errorf("Expected '%s', got '%s'", string(tt.expected), data)
 					}
 				}
 			}
@@ -112,9 +112,6 @@ func TestFetcher_LocalFiles(t *testing.T) {
 
 // TestFetcher_URLs tests the Fetch method for URL scenarios.
 func TestFetcher_URLs(t *testing.T) {
-	// Initialize the fetcher
-	var f Fetcher = fetcher{}
-
 	// Define table of URL test cases
 	urlTests := []struct {
 		name          string
@@ -122,7 +119,7 @@ func TestFetcher_URLs(t *testing.T) {
 		expectError   bool
 		expected      []byte
 		errorContains string
-		customClient  func()
+		customClient  func(t *testing.T) *http.Client
 	}{
 		{
 			name: "fetch_valid_url",
@@ -213,15 +210,12 @@ func TestFetcher_URLs(t *testing.T) {
 			expectError:   true,
 			expected:      nil,
 			errorContains: "timeout",
-			customClient: func() {
-				// Override the HTTP client with a timeout
-				originalClient := http.DefaultClient
-				http.DefaultClient = &http.Client{
+			customClient: func(_ *testing.T) *http.Client {
+				// Create a client with a short timeout
+				client := &http.Client{
 					Timeout: 1 * time.Nanosecond, // Force timeout
 				}
-				// Restore the original client after the test
-				// Note: `t.Cleanup` ensures this runs even if the test fails
-				t.Cleanup(func() { http.DefaultClient = originalClient })
+				return client
 			},
 		},
 	}
@@ -231,12 +225,16 @@ func TestFetcher_URLs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			url := tt.setup(t)
 
-			// Apply any custom client settings
+			// Instantiate the fetcher with a custom client if provided
+			var fetcherInstance Fetcher
 			if tt.customClient != nil {
-				tt.customClient()
+				client := tt.customClient(t)
+				fetcherInstance = NewFetcher(client)
+			} else {
+				fetcherInstance = NewFetcher(nil)
 			}
 
-			data, err := f.Fetch("", url)
+			data, err := fetcherInstance.Fetch("", url)
 
 			if tt.expectError {
 				if err == nil {
@@ -249,9 +247,75 @@ func TestFetcher_URLs(t *testing.T) {
 					t.Errorf("Unexpected error: %v", err)
 				}
 				if !bytes.Equal(data, tt.expected) {
-					t.Errorf("Expected '%s', got '%s'", string(tt.expected), string(data))
+					t.Errorf("Expected '%s', got '%s'", string(tt.expected), data)
 				}
 			}
 		})
+	}
+}
+
+// TestFetcher_AuthHeader tests that the Authorization header is correctly set when GITHUB_TOKEN is present.
+func TestFetcher_AuthHeader(t *testing.T) {
+	expectedContent := "Authorized Content"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		token, exists := os.LookupEnv("GITHUB_TOKEN")
+		if exists {
+			expectedAuth := fmt.Sprintf("Bearer %s", token)
+			if authHeader != expectedAuth {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+		} else if authHeader != "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(expectedContent))
+	}))
+	defer server.Close()
+
+	// Set the GITHUB_TOKEN environment variable
+	os.Setenv("GITHUB_TOKEN", "testtoken")
+	defer os.Unsetenv("GITHUB_TOKEN")
+
+	// Initialize the fetcher with default client
+	f := NewFetcher(nil)
+
+	data, err := f.Fetch("", server.URL)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if !bytes.Equal(data, []byte(expectedContent)) {
+		t.Errorf("Expected '%s', got '%s'", expectedContent, data)
+	}
+}
+
+// TestFetcher_NoAuthHeader ensures that no Authorization header is set when GITHUB_TOKEN is absent.
+func TestFetcher_NoAuthHeader(t *testing.T) {
+	expectedContent := "No Auth Content"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader != "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(expectedContent))
+	}))
+	defer server.Close()
+
+	// Ensure GITHUB_TOKEN is not set
+	os.Unsetenv("GITHUB_TOKEN")
+
+	// Initialize the fetcher with default client
+	f := NewFetcher(nil)
+
+	data, err := f.Fetch("", server.URL)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if !bytes.Equal(data, []byte(expectedContent)) {
+		t.Errorf("Expected '%s', got '%s'", expectedContent, data)
 	}
 }

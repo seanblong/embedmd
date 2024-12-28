@@ -32,9 +32,22 @@ type Fetcher interface {
 	Fetch(dir, path string) ([]byte, error)
 }
 
-type fetcher struct{}
+// fetcher implements the Fetcher interface with an injectable HTTP client.
+type fetcher struct {
+	client *http.Client
+}
 
-func (fetcher) Fetch(dir, path string) ([]byte, error) {
+// NewFetcher creates a new fetcher with the provided HTTP client.
+// If no client is provided, it defaults to http.DefaultClient.
+func NewFetcher(client *http.Client) Fetcher {
+	if client == nil {
+		client = http.DefaultClient
+	}
+	return &fetcher{client: client}
+}
+
+// Fetch fetches the content of a file or URL.
+func (f *fetcher) Fetch(dir, path string) ([]byte, error) {
 	if !strings.HasPrefix(path, "http://") && !strings.HasPrefix(path, "https://") {
 		// Check that path is not absolute
 		if !filepath.IsAbs(path) {
@@ -43,7 +56,16 @@ func (fetcher) Fetch(dir, path string) ([]byte, error) {
 		return os.ReadFile(path)
 	}
 
-	res, err := http.Get(path)
+	req, err := http.NewRequest("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if val, ok := os.LookupEnv("GITHUB_TOKEN"); ok {
+		req.Header.Add("Authorization", "Bearer "+val)
+	}
+
+	res, err := f.client.Do(req)
 	if err != nil {
 		return nil, err
 	}

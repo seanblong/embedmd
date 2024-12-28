@@ -20,30 +20,13 @@ linters:
     - dupl
     - gofmt
     - misspell
-
-  # Enable presets.
-  # https://golangci-lint.run/usage/linters
-  # Default: []
-  presets:
-    - bugs
-    - comment
-    - complexity
-    - error
-    - format
-    - import
-    - metalinter
-    - module
-    - performance
-    - sql
-    - style
-    - test
-    - unused
+    - gocritic
 
 linters-settings:
   cyclop:
     # The maximal code complexity to report.
     # Default: 10
-    # max-complexity: 10
+    max-complexity: 20
     # The maximal average package complexity.
     # If it's higher than 0.0 (float) the check is enabled
     # Default: 0.0

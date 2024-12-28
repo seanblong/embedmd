@@ -1,6 +1,6 @@
 # embedmd
 
-[![Coverage](https://img.shields.io/badge/Coverage-86.3%25-brightgreen)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
+[![Coverage](https://img.shields.io/badge/Coverage-86.4%25-brightgreen)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
 [![CI](https://github.com/seanblong/embedmd/actions/workflows/test.yaml/badge.svg)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/seanblong/embedmd)](https://goreportcard.com/report/github.com/seanblong/embedmd)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/seanblong/embedmd/main.svg)](https://results.pre-commit.ci/latest/github/seanblong/embedmd/main)
@@ -33,6 +33,10 @@ a URL starting with `http://` or `https://`.
 If the `pathOrURL` is a URL the tool will fetch the content in that URL.
 The embedded content starts at the first line that matches `/start regexp/`
 and finishes at the first line matching `/end regexp/`.
+
+> [!TIP]
+> If the URL is part of a private repository, you can use a personal access token
+> to authenticate by saving the token to environment variable `GITHUB_TOKEN`.
 
 Omitting the the second regular expression will embed only the piece of text
 that matches `/regexp/`:

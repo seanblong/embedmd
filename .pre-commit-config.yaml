@@ -15,8 +15,6 @@ repos:
     rev: v1.62.2
     hooks:
       - id: golangci-lint
-        additional_dependencies:
-         - github.com/golangci/golangci-lint/cmd/golangci-lint@v1.62.2
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.13.0
     hooks:
