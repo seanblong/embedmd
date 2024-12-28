@@ -1,4 +1,3 @@
-// content_test.go
 package embedmd
 
 import (
