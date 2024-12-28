@@ -187,7 +187,7 @@ Example PR titles:
 - “feat: add ability to authenticate to private repos”
 - "fix: addresses Issue #1234 - check for closing parentheses in parser"
 
-<-- links -->
+<!-- links -->
 [1]: https://pre-commit.com/#install
 [2]: https://github.com/rbenv/rbenv
 [3]: https://www.conventionalcommits.org/en/v1.0.0/
