@@ -52,7 +52,7 @@ jobs:
           link: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/test.yaml
 
       - name: Verify Changed Files
-        uses: tj-actions/verify-changed-files@54e20d3c522fbeed99ebaf2e38a1eb33214c58ba # v16
+        uses: tj-actions/verify-changed-files@2acec78834cc690f70b3445712363fc314224127 # v17
         id: verify-changed-files
         with:
           files: README.md
