@@ -112,12 +112,12 @@ Given the two files in [sample](sample):
 package main
 
 import (
-    "fmt"
-    "time"
+	"fmt"
+	"time"
 )
 
 func main() {
-    fmt.Println("Hello, there, it is", time.Now())
+	fmt.Println("Hello, there, it is", time.Now())
 }
 ```
 
@@ -159,7 +159,19 @@ You can also see how to get the current time:
   between the contents of `docs.md` and the output of
   `embedmd docs.md`.
 
-### Disclaimer
+## Pre-commit
 
-This is not an official Google product (experimental or otherwise), it is just
-code that happens to be owned by Google.
+Hooks for `pre-commit` have been provided to easily integrate `embedmd` into your
+CI workflow.  By default it will run a check with `-d` and fail a commit if there
+are differences, i.e., drift between what a file has currently rendered and its
+source.  Below is an example `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/seanblong/embedmd
+    rev: v0.2.3
+    hooks:
+      - id: embedmd
+        # uncomment to have hook perform in-place update
+        # args: [-w]
+```
