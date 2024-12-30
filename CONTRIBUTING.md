@@ -95,11 +95,11 @@ golangci-lint run
 
 The `markdownlint` pre-commit hook requires `ruby` of version 2.7 or later.
 
-[embedmd]:# (.pre-commit-config.yaml yaml /  - repo: https:\/\/github.com\/jumanjihouse\/pre-commit-hooks/ /id: markdownlint/)
+[embedmd]:# (.pre-commit-config.yaml yaml /  - repo: https:\/\/github.com\/markdownlint\/markdownlint/ /id: markdownlint/)
 
 ```yaml
-  - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 3.0.0
+  - repo: https://github.com/markdownlint/markdownlint
+    rev: v0.13.0
     hooks:
       - id: markdownlint
 ```

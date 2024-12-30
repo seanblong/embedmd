@@ -25,3 +25,7 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+  - repo: https://github.com/seanblong/embedmd
+    rev: v0.2.2
+    hooks:
+      - id: embedmd
