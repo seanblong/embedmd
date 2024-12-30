@@ -1,4 +1,7 @@
 name: CI
+permissions:
+  contents: read
+  pull-requests: write
 
 on:
   pull_request:
@@ -16,7 +19,7 @@ jobs:
     name: PR Conventional Commit Validation
     steps:
       - name: PR Conventional Commit Validation
-        uses:  ytanikin/pr-conventional-commits@1.4.0
+        uses:  ytanikin/pr-conventional-commits@6ac1cea04190fc076b0e539025501d7e7d241ac1 # 1.4.0
         with:
           task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
   test:
@@ -43,13 +46,13 @@ jobs:
           go tool cover -func=coverage-without-samples.out -o=coverage.out
 
       - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
-        uses: tj-actions/coverage-badge-go@v2
+        uses: tj-actions/coverage-badge-go@84540b9f82b4f569ac9f248cf6f2893ac3cc4791 # v2
         with:
           filename: coverage.out
           link: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/test.yaml
 
       - name: Verify Changed Files
-        uses: tj-actions/verify-changed-files@v16
+        uses: tj-actions/verify-changed-files@54e20d3c522fbeed99ebaf2e38a1eb33214c58ba # v16
         id: verify-changed-files
         with:
           files: README.md
@@ -64,7 +67,7 @@ jobs:
 
       - name: Push Changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@d91a481090679876dfc4178fef17f286781251df # v0.8.0
         with:
           github_token: ${{ github.token }}
           branch: ${{ github.head_ref }}

@@ -1,4 +1,7 @@
 name: Generate Release
+permissions:
+  contents: read
+  pull-requests: write
 
 on:
   push:
@@ -13,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Get Next Version
-        uses: reecetech/version-increment@2024.10.1
+        uses: reecetech/version-increment@a29aa752dc3b8118a2dc2ed93faf0e95a73a9c7e # 2024.10.1
         id: version
         with:
           scheme: conventional_commits
@@ -42,7 +45,7 @@ jobs:
           ./release.sh
 
       - name: Attach Assets
-        uses: AButler/upload-release-assets@v3.0
+        uses: AButler/upload-release-assets@3d6774fae0ed91407dc5ae29d576b166536d1777 # v3.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           files: "./releases/downloads/${{ steps.version.outputs.v-version }}/*.tar.gz"
