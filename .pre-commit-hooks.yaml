@@ -1,0 +1,7 @@
+- id: embedmd
+  name: embedmd
+  description: embedmd checks for updates to embedded markdown files
+  entry: embedmd -d
+  language: golang
+  types: [markdown]
+  files: \.md$
