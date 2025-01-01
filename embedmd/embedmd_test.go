@@ -33,6 +33,19 @@ func main() {
 }
 `
 
+const markdownContent = `
+# Markdown Content
+
+` + "```go" + `
+package main
+
+import "fmt"
+
+func main() {
+        fmt.Println("hello, test")
+}
+` + "```"
+
 func TestExtract(t *testing.T) {
 	tc := []struct {
 		name       string
@@ -351,6 +364,108 @@ func TestProcess(t *testing.T) {
 				"```markdown\n" +
 				"[embedmd]:# (nothing.md)\n" +
 				"```\n" +
+				"Yay!\n",
+		},
+		{
+			name: "new nested code block in none block",
+			in: "[embedmd]:# (code.md none)\n" +
+				"Yay!\n",
+			files: map[string][]byte{"code.md": []byte(markdownContent)},
+			out: "[embedmd]:# (code.md none)\n\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+		},
+		{
+			name: "replace existing nested code block in none block",
+			in: "[embedmd]:# (code.md none)\n\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+			files: map[string][]byte{"code.md": []byte(markdownContent)},
+			out: "[embedmd]:# (code.md none)\n\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+		},
+		{
+			name: "replace existing nested code block in none block (missing new line)",
+			in: "[embedmd]:# (code.md none)\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+			files: map[string][]byte{"code.md": []byte(markdownContent)},
+			out: "[embedmd]:# (code.md none)\n\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n" +
+				"Yay!\n",
+		},
+		{
+			name: "replace existing nested code block in none block (errant string",
+			in: "[embedmd]:# (code.md none)\n" +
+				"Yay!\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n",
+			files: map[string][]byte{"code.md": []byte(markdownContent)},
+			out: "[embedmd]:# (code.md none)\n\n" +
+				"<!-- embedmd block start -->\n\n" +
+				"# Markdown Content\n\n" +
+				"```go\n" +
+				"package main\n\n" +
+				"import \"fmt\"\n\n" +
+				"func main() {\n" +
+				"        fmt.Println(\"hello, test\")\n" +
+				"}\n" +
+				"```\n" +
+				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
 		},
 	}
