@@ -70,7 +70,7 @@ func parsingText(out io.Writer, s textScanner, run commandRunner) (state, error)
 	case strings.HasPrefix(line, "```"):
 		return codeParser{print: true}.parse, nil
 	case strings.HasPrefix(line, "<!-- embedmd"):
-		return codeParser{print: true}.parse, nil
+		return noneParser{print: true}.parse, nil
 	default:
 		fmt.Fprintln(out, s.Text())
 		return parsingText, nil
@@ -92,8 +92,11 @@ func parsingCmd(out io.Writer, s textScanner, run commandRunner) (state, error) 
 	if !s.Scan() {
 		return nil, nil // end of file, which is fine.
 	}
-	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
+	if strings.HasPrefix(s.Text(), "```") {
 		return codeParser{print: false}.parse, nil
+	}
+	if strings.HasPrefix(s.Text(), "<!-- embedmd") {
+		return noneParser{print: false}.parse, nil
 	}
 
 	prevLine := s.Text()
@@ -109,8 +112,11 @@ func parsingCmd(out io.Writer, s textScanner, run commandRunner) (state, error) 
 	if !s.Scan() {
 		return nil, nil // end of file, which is fine.
 	}
-	if strings.HasPrefix(s.Text(), "```") || strings.HasPrefix(s.Text(), "<!-- embedmd") {
+	if strings.HasPrefix(s.Text(), "```") {
 		return codeParser{print: false}.parse, nil
+	}
+	if strings.HasPrefix(s.Text(), "<!-- embedmd") {
+		return noneParser{print: false}.parse, nil
 	}
 
 	// now we can restore the blank line to after we have printed a code block
@@ -130,11 +136,31 @@ func (c codeParser) parse(out io.Writer, s textScanner, run commandRunner) (stat
 	if !s.Scan() {
 		return nil, fmt.Errorf("unbalanced code section")
 	}
-	if !strings.HasPrefix(s.Text(), "```") && !strings.HasPrefix(s.Text(), "<!-- embedmd") {
+	if !strings.HasPrefix(s.Text(), "```") {
 		return c.parse, nil
 	}
 
 	// print the end of the code section if needed and go back to parsing text.
+	if c.print {
+		fmt.Fprintln(out, s.Text())
+	}
+	return parsingText, nil
+}
+
+type noneParser struct{ print bool }
+
+func (c noneParser) parse(out io.Writer, s textScanner, run commandRunner) (state, error) {
+	if c.print {
+		fmt.Fprintln(out, s.Text())
+	}
+	if !s.Scan() {
+		return nil, fmt.Errorf("unbalanced none section")
+	}
+	if !strings.HasPrefix(s.Text(), "<!-- embedmd") {
+		return c.parse, nil
+	}
+
+	// print the end of the none section if needed and go back to parsing text.
 	if c.print {
 		fmt.Fprintln(out, s.Text())
 	}
