@@ -10,7 +10,7 @@ fi
 # TODO: check that the tag looks like vX.Y.Z
 
 GOOSS=("darwin" "windows" "linux")
-GOARCHS=("amd64" "386")
+GOARCHS=("amd64" "arm64" "386")
 
 mkdir -p downloads/$TAG
 
