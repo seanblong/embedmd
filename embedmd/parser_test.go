@@ -88,6 +88,16 @@ func TestParser(t *testing.T) {
 			in:   "```go\nhello\n```\n\n```go\nbye\n```\n",
 			out:  "```go\nhello\n```\n\n```go\nbye\n```\n",
 		},
+		{
+			name: "embedded code sections",
+			in:   "```go\nhello\n\n```go\nbye\n```\n```\n",
+			out:  "```go\nhello\n\n```go\nbye\n```\n```\n",
+		},
+		{
+			name: "embedded code in none section",
+			in:   "<!-- embedmd block start -->\n```go\nhello\n<!-- embedmd block end -->\n",
+			out:  "<!-- embedmd block start -->\n```go\nhello\n<!-- embedmd block end -->\n",
+		},
 	}
 
 	for _, tt := range tc {
