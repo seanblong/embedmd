@@ -24,7 +24,7 @@ exclude_rule 'MD046'
 # Replace standard line-length rule with custom one.  Ignore tables, code blocks,
 # and lines starting with "[embed]".
 exclude_rule 'MD013'
-rule 'custom-line-length', ignore_code_blocks: true, tables: false, ignore_prefix: '[embed]'
+rule 'custom-line-length', ignore_code_blocks: true, tables: false, ignore_prefix: '[embedmd]'
 
 # Allow tabs in code blocks
 rule 'MD010', ignore_code_blocks: true
