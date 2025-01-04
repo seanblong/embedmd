@@ -1,6 +1,6 @@
 # embedmd
 
-[![Coverage](https://img.shields.io/badge/Coverage-87.1%25-brightgreen)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
+[![Coverage](https://img.shields.io/badge/Coverage-86.3%25-brightgreen)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
 [![CI](https://github.com/seanblong/embedmd/actions/workflows/test.yaml/badge.svg)](https://github.com/seanblong/embedmd/actions/workflows/test.yaml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/seanblong/embedmd)](https://goreportcard.com/report/github.com/seanblong/embedmd)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/seanblong/embedmd/main.svg)](https://results.pre-commit.ci/latest/github/seanblong/embedmd/main)
@@ -75,8 +75,8 @@ files, since `.go` matches `go`). However, this will fail with other files like
 ```
 
 If you want to remove code fencing altogether, you can explicitly use `none` as
-the language.  This can be useful when composing large, renderd Markdown files out
-of smaller Markdown files that contain fenced code blocks themselves.
+the language.  This can be useful when composing large, rendered Markdown files
+out of smaller Markdown files that contain fenced code blocks themselves.
 
 ```Markdown
 [embedmd]:# (file.md none)
@@ -87,14 +87,13 @@ of smaller Markdown files that contain fenced code blocks themselves.
 > You can install Go by following [these instructions](https://golang.org/doc/install).
 
 `embedmd` is written in Go, so if you have Go installed you can install it with
-`go get`:
+`go install`:
 
 ```bash
 go install github.com/seanblong/embedmd
 ```
 
-This will download the code, compile it, and leave an `embedmd` binary
-in `$GOPATH/bin`.
+This will download the code, compile it, and leave an `embedmd` binary in `$GOPATH/bin`.
 
 ## Usage
 
@@ -103,7 +102,6 @@ Given the two files in [sample](sample):
 *hello.go:*
 
 [embedmd]:# (sample/hello.go)
-
 ```go
 // Copyright 2016 Google Inc. All rights reserved.
 // Use of this source code is governed by the Apache 2.0
@@ -124,7 +122,6 @@ func main() {
 *docs.md:*
 
 [embedmd]:# (sample/docs.md Markdown /./ /embedmd.*time.*/)
-
 ```Markdown
 # A hello world in Go
 
@@ -148,6 +145,21 @@ You can also see how to get the current time:
 
 [embedmd]:# (hello.go /time\.[^)]*\)/)
 ```
+
+You can render the `docs.md` file with the embedded code snippets by running:
+
+```bash
+embedmd docs.md
+```
+
+You can redirect this output to a file:
+
+```bash
+embedmd docs.md > rendered.md
+```
+
+Conversely output can be rendered in place or diffed with the `-w` and `-d`
+respectively.  See [flags](#flags) below for more details.
 
 ## Flags
 
@@ -174,4 +186,6 @@ repos:
       - id: embedmd
         # uncomment to have hook perform in-place update
         # args: [-w]
+        # uncomment to exclude subdirectories
+        # exclude: sample/
 ```

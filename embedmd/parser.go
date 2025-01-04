@@ -68,9 +68,9 @@ func parsingText(out io.Writer, s textScanner, run commandRunner) (state, error)
 	case strings.HasPrefix(line, "[embedmd]:#"):
 		return parsingCmd, nil
 	case strings.HasPrefix(line, "```"):
-		return codeParser{print: true}.parse, nil
+		return codeParser{print: true, delimiter: "```"}.parse, nil
 	case strings.HasPrefix(line, "<!-- embedmd"):
-		return noneParser{print: true}.parse, nil
+		return codeParser{print: true, delimiter: "<!-- embedmd"}.parse, nil
 	default:
 		fmt.Fprintln(out, s.Text())
 		return parsingText, nil
@@ -93,41 +93,20 @@ func parsingCmd(out io.Writer, s textScanner, run commandRunner) (state, error) 
 		return nil, nil // end of file, which is fine.
 	}
 	if strings.HasPrefix(s.Text(), "```") {
-		return codeParser{print: false}.parse, nil
+		return codeParser{print: false, delimiter: "```"}.parse, nil
 	}
 	if strings.HasPrefix(s.Text(), "<!-- embedmd") {
-		return noneParser{print: false}.parse, nil
+		return codeParser{print: false, delimiter: "<!-- embedmd"}.parse, nil
 	}
 
-	prevLine := s.Text()
-	// we expect the line after a command to be blank, if it isn't then print
-	// it immediately, otherwise add this new line after the code block to preserve
-	// preexisting spacing with the next line,
-	if prevLine != "" && prevLine != "\n" {
-		fmt.Fprintln(out, s.Text())
-	}
-
-	// Scan the next line under command, i.e. two lines lower, as this is where
-	// we expect the code block to be.
-	if !s.Scan() {
-		return nil, nil // end of file, which is fine.
-	}
-	if strings.HasPrefix(s.Text(), "```") {
-		return codeParser{print: false}.parse, nil
-	}
-	if strings.HasPrefix(s.Text(), "<!-- embedmd") {
-		return noneParser{print: false}.parse, nil
-	}
-
-	// now we can restore the blank line to after we have printed a code block
-	if prevLine == "" || prevLine == "\n" {
-		fmt.Fprintln(out, prevLine)
-	}
 	fmt.Fprintln(out, s.Text())
 	return parsingText, nil
 }
 
-type codeParser struct{ print bool }
+type codeParser struct {
+	print     bool
+	delimiter string
+}
 
 func (c codeParser) parse(out io.Writer, s textScanner, run commandRunner) (state, error) {
 	if c.print {
@@ -136,31 +115,11 @@ func (c codeParser) parse(out io.Writer, s textScanner, run commandRunner) (stat
 	if !s.Scan() {
 		return nil, fmt.Errorf("unbalanced code section")
 	}
-	if !strings.HasPrefix(s.Text(), "```") {
+	if !strings.HasPrefix(s.Text(), c.delimiter) {
 		return c.parse, nil
 	}
 
 	// print the end of the code section if needed and go back to parsing text.
-	if c.print {
-		fmt.Fprintln(out, s.Text())
-	}
-	return parsingText, nil
-}
-
-type noneParser struct{ print bool }
-
-func (c noneParser) parse(out io.Writer, s textScanner, run commandRunner) (state, error) {
-	if c.print {
-		fmt.Fprintln(out, s.Text())
-	}
-	if !s.Scan() {
-		return nil, fmt.Errorf("unbalanced none section")
-	}
-	if !strings.HasPrefix(s.Text(), "<!-- embedmd") {
-		return c.parse, nil
-	}
-
-	// print the end of the none section if needed and go back to parsing text.
 	if c.print {
 		fmt.Fprintln(out, s.Text())
 	}

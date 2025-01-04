@@ -96,7 +96,6 @@ golangci-lint run
 The `markdownlint` pre-commit hook requires `ruby` of version 2.7 or later.
 
 [embedmd]:# (.pre-commit-config.yaml yaml /  - repo: https:\/\/github.com\/markdownlint\/markdownlint/ /id: markdownlint/)
-
 ```yaml
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.13.0
@@ -128,9 +127,8 @@ and can be added to to any repo to likewise exclude line length checks for lines
 prefixed by "[embedmd]".  See [.mdlrc](.mdlrc) for the referenced rule and configuration.
 
 [embedmd]:# (.mdlrc yaml)
-
 ```yaml
-rulesets ['ci/custom-line-length.rb']
+rulesets ['ci/custom-rules.rb']
 style 'ci/markdown-style.rb'
 ```
 
