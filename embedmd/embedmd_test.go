@@ -44,7 +44,8 @@ import "fmt"
 func main() {
         fmt.Println("hello, test")
 }
-` + "```"
+` + "```" + `
+`
 
 func TestExtract(t *testing.T) {
 	tc := []struct {
@@ -109,20 +110,20 @@ func TestExtractFromFile(t *testing.T) {
 			name:  "extract the whole file",
 			cmd:   command{path: "code.go", lang: "go", useFence: true},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "\n```go\n" + string(content) + "```\n",
+			out:   "```go\n" + string(content) + "```\n",
 		},
 		{
 			name:    "extract the whole from a different directory",
 			cmd:     command{path: "code.go", lang: "go", useFence: true},
 			baseDir: "sample",
 			files:   map[string][]byte{"sample/code.go": []byte(content)},
-			out:     "\n```go\n" + string(content) + "```\n",
+			out:     "```go\n" + string(content) + "```\n",
 		},
 		{
 			name:  "added line break",
 			cmd:   command{path: "code.go", lang: "go", useFence: true, start: ptr("/fmt\\.Println/")},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "\n```go\nfmt.Println\n```\n",
+			out:   "```go\nfmt.Println\n```\n",
 		},
 		{
 			name: "missing file",
@@ -139,7 +140,7 @@ func TestExtractFromFile(t *testing.T) {
 			name:  "no fencing",
 			cmd:   command{path: "code.go", lang: "none"},
 			files: map[string][]byte{"code.go": []byte(content)},
-			out:   "\n<!-- embedmd block start -->\n" + string(content) + "<!-- embedmd block end -->\n",
+			out:   "<!-- embedmd block start -->\n" + string(content) + "<!-- embedmd block end -->\n",
 		},
 	}
 
@@ -196,7 +197,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n\n" +
+				"[embedmd]:# (code.go)\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -210,7 +211,7 @@ func TestProcess(t *testing.T) {
 				"Again!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n\n" +
+				"[embedmd]:# (code.go)\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -224,7 +225,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n\n" +
+				"[embedmd]:# (code.go none)\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
 				"<!-- embedmd block end -->\n" +
@@ -238,15 +239,15 @@ func TestProcess(t *testing.T) {
 				"[embedmd]:# (code.go none)\n\n",
 			files: map[string][]byte{"code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n\n" +
+				"[embedmd]:# (code.go none)\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
 				"<!-- embedmd block end -->\n\n" +
 				"And here is some more!\n" +
-				"[embedmd]:# (code.go none)\n\n" +
+				"[embedmd]:# (code.go none)\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
-				"<!-- embedmd block end -->\n",
+				"<!-- embedmd block end -->\n\n",
 		},
 		{
 			name: "generating code for first time with base dir",
@@ -256,75 +257,25 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			files: map[string][]byte{"sample/code.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n\n" +
-				"```go\n" +
-				string(content) +
-				"```\n" +
-				"Yay!\n",
-		},
-		{
-			name: "replacing existing code without newline after command",
-			in: "# This is some markdown\n" +
 				"[embedmd]:# (code.go)\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
 				"Yay!\n",
-			files: map[string][]byte{"code.go": []byte(content)},
-			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n\n" +
-				"```go\n" +
-				string(content) +
-				"```\n" +
-				"Yay!\n",
 		},
 		{
-			name: "replacing existing code with new line after command",
-			in: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n\n" +
-				"```go\n" +
-				string(content) +
-				"```\n" +
-				"Yay!\n",
-			files: map[string][]byte{"code.go": []byte(content)},
-			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go)\n\n" +
-				"```go\n" +
-				string(content) +
-				"```\n" +
-				"Yay!\n",
-		},
-		{
-			name: "replacing existing code no-fencing without newline after command",
+			name: "replacing existing code with no fencing",
 			in: "# This is some markdown\n" +
 				"[embedmd]:# (code.go none)\n" +
-				"Yay!\n" +
+				"```go\n" +
+				string(content) +
+				"```\n",
+			files: map[string][]byte{"code.go": []byte(content)},
+			out: "# This is some markdown\n" +
+				"[embedmd]:# (code.go none)\n" +
 				"<!-- embedmd block start -->\n" +
 				string(content) +
 				"<!-- embedmd block end -->\n",
-			files: map[string][]byte{"code.go": []byte(content)},
-			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n\n" +
-				"<!-- embedmd block start -->\n" +
-				string(content) +
-				"<!-- embedmd block end -->\n" +
-				"Yay!\n",
-		},
-		{
-			name: "replacing existing code no-fencing with newline after command",
-			in: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n\n" +
-				"<!-- embedmd block start -->\n" +
-				string(content) +
-				"<!-- embedmd block end -->\n" +
-				"Yay!\n",
-			files: map[string][]byte{"code.go": []byte(content)},
-			out: "# This is some markdown\n" +
-				"[embedmd]:# (code.go none)\n\n" +
-				"<!-- embedmd block start -->\n" +
-				string(content) +
-				"<!-- embedmd block end -->\n" +
-				"Yay!\n",
 		},
 		{
 			name: "embedding code from a URL",
@@ -333,7 +284,7 @@ func TestProcess(t *testing.T) {
 				"Yay!\n",
 			urls: map[string][]byte{"https://fakeurl.com/main.go": []byte(content)},
 			out: "# This is some markdown\n" +
-				"[embedmd]:# (https://fakeurl.com/main.go)\n\n" +
+				"[embedmd]:# (https://fakeurl.com/main.go)\n" +
 				"```go\n" +
 				string(content) +
 				"```\n" +
@@ -371,100 +322,23 @@ func TestProcess(t *testing.T) {
 			in: "[embedmd]:# (code.md none)\n" +
 				"Yay!\n",
 			files: map[string][]byte{"code.md": []byte(markdownContent)},
-			out: "[embedmd]:# (code.md none)\n\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
+			out: "[embedmd]:# (code.md none)\n" +
+				"<!-- embedmd block start -->\n" +
+				string(markdownContent) +
 				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
 		},
 		{
 			name: "replace existing nested code block in none block",
-			in: "[embedmd]:# (code.md none)\n\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
-				"<!-- embedmd block end -->\n" +
-				"Yay!\n",
-			files: map[string][]byte{"code.md": []byte(markdownContent)},
-			out: "[embedmd]:# (code.md none)\n\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
-				"<!-- embedmd block end -->\n" +
-				"Yay!\n",
-		},
-		{
-			name: "replace existing nested code block in none block (missing new line)",
 			in: "[embedmd]:# (code.md none)\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
+				"<!-- embedmd block start -->\n" +
+				string(markdownContent) +
 				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
 			files: map[string][]byte{"code.md": []byte(markdownContent)},
-			out: "[embedmd]:# (code.md none)\n\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
-				"<!-- embedmd block end -->\n" +
-				"Yay!\n",
-		},
-		{
-			name: "replace existing nested code block in none block (errant string",
-			in: "[embedmd]:# (code.md none)\n" +
-				"Yay!\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
-				"<!-- embedmd block end -->\n",
-			files: map[string][]byte{"code.md": []byte(markdownContent)},
-			out: "[embedmd]:# (code.md none)\n\n" +
-				"<!-- embedmd block start -->\n\n" +
-				"# Markdown Content\n\n" +
-				"```go\n" +
-				"package main\n\n" +
-				"import \"fmt\"\n\n" +
-				"func main() {\n" +
-				"        fmt.Println(\"hello, test\")\n" +
-				"}\n" +
-				"```\n" +
+			out: "[embedmd]:# (code.md none)\n" +
+				"<!-- embedmd block start -->\n" +
+				string(markdownContent) +
 				"<!-- embedmd block end -->\n" +
 				"Yay!\n",
 		},
