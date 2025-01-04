@@ -1,4 +1,4 @@
-## CR031 - Fenced code blocks should be surrounded by blank lines
+# CR031 - Fenced code blocks should be surrounded by blank lines
 
 Tags: code, blank_lines
 
