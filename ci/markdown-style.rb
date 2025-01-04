@@ -26,6 +26,11 @@ exclude_rule 'MD046'
 exclude_rule 'MD013'
 rule 'custom-line-length', ignore_code_blocks: true, tables: false, ignore_prefix: '[embedmd]'
 
+# Replace fenced code blocks should be surrounded by blank lines with custom one
+# where the prefix "[embedmd]" is ignored from the rule.
+exclude_rule 'MD031'
+rule 'custom-blanks-around-fences', ignore_prefix: '[embedmd]'
+
 # Allow tabs in code blocks
 rule 'MD010', ignore_code_blocks: true
 
